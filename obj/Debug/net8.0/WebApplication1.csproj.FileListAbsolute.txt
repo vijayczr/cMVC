@@ -853,3 +853,4 @@ D:\VJ_Projects\cMVC\obj\Debug\net8.0\refint\WebApplication1.dll
 D:\VJ_Projects\cMVC\obj\Debug\net8.0\WebApplication1.pdb
 D:\VJ_Projects\cMVC\obj\Debug\net8.0\WebApplication1.genruntimeconfig.cache
 D:\VJ_Projects\cMVC\obj\Debug\net8.0\ref\WebApplication1.dll
+D:\VJ_Projects\cMVC\obj\Debug\net8.0\WebApplication1.sourcelink.json

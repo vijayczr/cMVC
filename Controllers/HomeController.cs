@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using WebApplication1.DataContext;
@@ -29,102 +30,48 @@ namespace WebApplication1.Controllers
         {
             return View();
         }
-        public async Task<IActionResult> Students()
+
+        [HttpPost]
+        public async Task<IActionResult> Index([Bind("Id,First_Name,Last_Name,Email,Password")] Users users)
         {
-            return View(await _context.Users.ToListAsync());
-        }
-
-        // GET: student/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
+            if (ModelState.IsValid)
             {
-                return NotFound();
+                var data = await _context.Users.Where(u => u.Email == users.Email).FirstOrDefaultAsync();
+                if(data != null)
+                {
+                    ModelState.AddModelError("", "User with this mail already exist");
+                    return View(users);
+                }
+                _context.Users.Add(users);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(login));
             }
-
-            var users = await _context.Users
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (users == null)
-            {
-                return NotFound();
-            }
-
             return View(users);
         }
 
-        // GET: student/Create
-        public IActionResult Create()
+        public IActionResult login()
         {
             return View();
         }
 
-        // POST: student/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,First_Name,Last_Name,Number")] Users users)
+        public async Task<IActionResult> login([Bind("Email,Password")] LoginModel loginModel)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(users);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(users);
-        }
-
-        // GET: student/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var users = await _context.Users.FindAsync(id);
-            if (users == null)
-            {
-                return NotFound();
-            }
-            return View(users);
-        }
-
-        // POST: student/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,First_Name,Last_Name,Number")] Users users)
-        {
-            if (id != users.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
+                var daata =await _context.Users.Where(u => u.Email == loginModel.Email).FirstOrDefaultAsync();
+                if (daata == null || daata.Password != loginModel.Password)
                 {
-                    _context.Update(users);
-                    await _context.SaveChangesAsync();
+                    ModelState.AddModelError("", "Incorrect email or password");
+                    return View(loginModel);
+
                 }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!UsersExists(users.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
             }
-            return View(users);
+            return RedirectToAction(nameof(Privacy));
         }
 
+
+ 
         // GET: student/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
@@ -143,30 +90,5 @@ namespace WebApplication1.Controllers
             return View(users);
         }
 
-        // POST: student/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var users = await _context.Users.FindAsync(id);
-            if (users != null)
-            {
-                _context.Users.Remove(users);
-            }
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool UsersExists(int id)
-        {
-            return _context.Users.Any(e => e.Id == id);
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
     }
 }

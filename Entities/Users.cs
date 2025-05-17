@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace WebApplication1.Entities
 {
@@ -7,8 +8,12 @@ namespace WebApplication1.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity), Column(Order = 0)]
         public int Id { get; set; }
         [Column(TypeName = "varchar(100)")]
+        [Required]
         public string? First_Name { get; set; }
         public string Last_Name { get; set; }
-        public string Number { get; set; }
+        public string Email { get; set; }
+
+        [Required]
+        public string Password { get; set; }
     }
 }

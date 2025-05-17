@@ -9,5 +9,6 @@ namespace WebApplication1.DataContext
 
         public DbSet<Users> Users { get; set; }
 
+
     }
 }
